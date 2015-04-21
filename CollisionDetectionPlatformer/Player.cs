@@ -69,6 +69,10 @@ namespace CollisionDetectionPlatformer
             if (!IsOnGround) {
                 Velocity.Y += 1 * Gravity * deltaTime;
             }
+            else
+            {
+                Velocity.Y = 0;
+            }
             
             //if (velocity.X != 0)
             //{

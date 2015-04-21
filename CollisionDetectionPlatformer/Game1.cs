@@ -81,7 +81,9 @@ namespace CollisionDetectionPlatformer
             if (a != Vector2.Zero)
             {
                 player._position = a;
-                player.Velocity = Vector2.Zero;
+                /*
+                if(player.IsOnGround)
+                    player.Velocity.Y = Vector2.Zero.Y; */
             }
             base.Update(gameTime);
         }
