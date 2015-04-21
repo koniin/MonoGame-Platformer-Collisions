@@ -57,13 +57,14 @@ namespace CollisionDetectionPlatformer
             Move player to the new position. With this new position, step the other coordinate, if still not done.
 	
         */
-
+        
         public Vector2 TryMovePlayer(Vector2 position, Vector2 moveAmount, Vector2 direction)
         {
             // direction.X => positive is moving right, negative is moving left
             // direction.Y => positive is moving down, negative is moving up
 
             // First find tiles in Y where we are moving to
+            // Step X first
             if (direction.X != 0)
             {
                 // For larger objects we need more points (same size sprite yields max 2 tiles)
@@ -112,11 +113,10 @@ namespace CollisionDetectionPlatformer
                         movementX = -movementX;
                     return new Vector2(movementX, 0);
                 }
-                
             }
             return Vector2.Zero;
         }
-
+        
         public Tile PositionToTile(Vector2 position)
         {
             return PositionToTile(position.X, position.Y);

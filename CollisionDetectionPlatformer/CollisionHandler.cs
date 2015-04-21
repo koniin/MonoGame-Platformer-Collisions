@@ -27,8 +27,9 @@ namespace CollisionDetectionPlatformer
                 // For larger objects we need more points (same size or smaller sprite yields max 2 tiles)
                 // Get the coordinate of the forward-facing edge, e.g. : If walking right, 
                 // the x coordinate of right of bounding box. 
-                Vector2 topPoint = new Vector2(box.X + (box.Width), box.Y);
-                Vector2 bottomPoint = new Vector2(box.X + (box.Width), box.Y + box.Height);
+                float boxEdge = direction.X > 0 ? box.X + box.Width : box.X;
+                Vector2 topPoint = new Vector2(boxEdge, box.Y);
+                Vector2 bottomPoint = new Vector2(boxEdge, box.Y + box.Height);
 
                 /*
                     Figure which lines of tiles the bounding box intersects with – this will give you a minimum and maximum tile 
@@ -49,15 +50,25 @@ namespace CollisionDetectionPlatformer
                     Scan along those lines of tiles and towards the direction of movement until you find the closest static obstacle. 
                     NOT IMPLEMENTED -> Then loop through every moving obstacle, and determine which is the closest obstacle that is actually on your path.
                 */
-                var solid1 = tileMap.GetNextSolidX(topPoint, 1);
-                var solid2 = tileMap.GetNextSolidX(bottomPoint, 1);
+                var solid1 = tileMap.GetNextSolidX(topPoint, (int)direction.X);
+                var solid2 = tileMap.GetNextSolidX(bottomPoint, (int)direction.X);
 
                 /*
                     The total movement of the player along that direction is then the minimum between the distance to 
                     closest obstacle,  and the amount that you wanted to move in the first place.
                 */
-                var movementX = Math.Min(Math.Min(solid1.X, solid2.X) - topPoint.X, moveAmount.X);
-                return new Vector2(movementX, 0);
+                if (direction.X > 0)
+                {
+                    var movementX = Math.Min(Math.Min(solid1.X, solid2.X) - topPoint.X, moveAmount.X);
+                    return new Vector2(movementX, 0);
+                }
+                else
+                {
+                    var movementX = Math.Min(topPoint.X - Math.Min(solid1.X + box.Width, solid2.X + box.Width), moveAmount.X);
+                    if (movementX < moveAmount.X)
+                        movementX = -movementX;
+                    return new Vector2(movementX, 0);
+                }
             }
             return Vector2.Zero;
         }
