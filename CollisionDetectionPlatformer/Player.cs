@@ -10,23 +10,37 @@ namespace CollisionDetectionPlatformer
 {
     class Player
     {
+        public static Player Playa
+        {
+            get;
+            private set;
+        }
+
         private Texture2D pointTexture;
         private KeyboardState lastKeyBoardState;
 
         private const float MoveAcceleration = 300f;
         private const float MaxMoveSpeed = 500f;
         private const float GroundDragFactor = 0.98f;
-        private const float Gravity = 5.81f;
+        private const float Gravity = 300f;
+
+        public Rectangle BoundingBox { 
+            get {
+                return new Rectangle((int)_position.X, (int)_position.Y, 32, 32);
+            }
+        }
 
         public Vector2 Direction { get; set; }
         public Vector2 _position;
+        public Vector2 Velocity;
 
-        private Vector2 velocity;
+        public bool IsOnGround { get; set; }
 
         public Player(Vector2 position)
         {
+            Playa = this;
             _position = position;
-            velocity = new Vector2();
+            Velocity = new Vector2();
         }
 
         public void Update(float deltaTime, float dt)
@@ -36,8 +50,9 @@ namespace CollisionDetectionPlatformer
             KeyboardState currentKeyBoardState = Keyboard.GetState();
             if (lastKeyBoardState.IsKeyDown(Keys.Up) && currentKeyBoardState.IsKeyUp(Keys.Up)) {
             }
-            if (lastKeyBoardState.IsKeyDown(Keys.Down) && currentKeyBoardState.IsKeyUp(Keys.Down))
+            if (currentKeyBoardState.IsKeyDown(Keys.Up))
             {
+                // Jump
             }
             if (currentKeyBoardState.IsKeyDown(Keys.Left))
             {
@@ -48,20 +63,24 @@ namespace CollisionDetectionPlatformer
                 Direction = Vector2.UnitX;
             }
 
-            velocity.X += Direction.X * MoveAcceleration * deltaTime;
-            velocity.X = MathHelper.Clamp(velocity.X, -MaxMoveSpeed, MaxMoveSpeed);
+            Velocity.X += Direction.X * MoveAcceleration * deltaTime;
+            Velocity.X = MathHelper.Clamp(Velocity.X, -MaxMoveSpeed, MaxMoveSpeed);
 
-            if (velocity.X != 0)
-            {
-                var v = TileMap.Map.TryMovePlayer(_position, velocity * deltaTime, new Vector2(Math.Sign(velocity.X), Math.Sign(velocity.Y)));
-                _position += v;
-                
+            if (!IsOnGround) {
+                Velocity.Y += 1 * Gravity * deltaTime;
             }
+            
+            //if (velocity.X != 0)
+            //{
+            //    var v = TileMap.Map.TryMovePlayer(_position, velocity * deltaTime, new Vector2(Math.Sign(velocity.X), Math.Sign(velocity.Y)));
+            //    _position += v;
+                
+            //}
             //else
             //{
-            //    _position += velocity * deltaTime;
+                _position += Velocity * deltaTime;
             //}
-            velocity.X *= GroundDragFactor;
+            Velocity.X *= GroundDragFactor;
             
             Direction = Vector2.Zero;
         }
@@ -83,5 +102,7 @@ namespace CollisionDetectionPlatformer
             batch.Draw(pointTexture, new Rectangle(area.X + area.Width - width, area.Y, width, area.Height), color);
             batch.Draw(pointTexture, new Rectangle(area.X, area.Y + area.Height - width, area.Width, width), color);
         }
+
+        public int PreviousBottom { get; set; }
     }
 }

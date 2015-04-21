@@ -129,6 +129,23 @@ namespace CollisionDetectionPlatformer
             return Tiles[tileY, tileX];
         }
 
+        public Tile GetTile(Vector2 position)
+        {
+            return Tiles[(int)position.X, (int)position.Y];
+        }
+
+        public Tile PositionToTile2(Vector2 position)
+        {
+            return PositionToTile(position.X, position.Y);
+        }
+
+        private Tile PositionToTile2(float x, float y)
+        {
+            int tileX = (int)(x / _tileSize);
+            int tileY = (int)(y / _tileSize);
+            return Tiles[tileX, tileY];
+        }
+
         public Vector2 GetNextSolidX(Vector2 pos, int direction)
         {
             for (int x = (int)(pos.X / _tileSize); x < _gridSize.X; x += direction)

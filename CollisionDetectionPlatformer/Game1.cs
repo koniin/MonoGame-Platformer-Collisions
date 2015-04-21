@@ -20,6 +20,7 @@ namespace CollisionDetectionPlatformer
         SpriteBatch spriteBatch;
         TileMap tileMap;
         Player player;
+        CollisionHandler collisioHandler;
 
         public Game1()
             : base()
@@ -39,6 +40,7 @@ namespace CollisionDetectionPlatformer
             // TODO: Add your initialization logic here
             tileMap = new TileMap(32, new Point(10,10));
             player = new Player(new Vector2(74, 62));
+            collisioHandler = new CollisionHandler();
             base.Initialize();
         }
 
@@ -75,8 +77,12 @@ namespace CollisionDetectionPlatformer
 
             //player.Update((float)gameTime.ElapsedGameTime.TotalMilliseconds, (float)gameTime.ElapsedGameTime.TotalSeconds);
             player.Update((float)gameTime.ElapsedGameTime.TotalSeconds, 0);
-            // TODO: Add your update logic here
-
+            var a = collisioHandler.CheckCollision(player.BoundingBox, tileMap);
+            if (a != Vector2.Zero)
+            {
+                player._position = a;
+                player.Velocity = Vector2.Zero;
+            }
             base.Update(gameTime);
         }
 
