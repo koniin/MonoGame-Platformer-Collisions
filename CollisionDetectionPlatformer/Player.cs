@@ -13,9 +13,9 @@ namespace CollisionDetectionPlatformer
         private Texture2D pointTexture;
         private KeyboardState lastKeyBoardState;
 
-        private const float MoveAcceleration = 150f;
-        private const float MaxMoveSpeed = 400f;
-        private const float GroundDragFactor = 1f;
+        private const float MoveAcceleration = 300f;
+        private const float MaxMoveSpeed = 500f;
+        private const float GroundDragFactor = 0.98f;
         private const float Gravity = 5.81f;
 
         public Vector2 Direction { get; set; }
@@ -54,7 +54,6 @@ namespace CollisionDetectionPlatformer
             if (velocity.X != 0)
             {
                 var v = TileMap.Map.TryMovePlayer(_position, velocity * deltaTime, new Vector2(Math.Sign(velocity.X), Math.Sign(velocity.Y)));
-                //_position += velocity * deltaTime;
                 _position += v;
                 
             }
