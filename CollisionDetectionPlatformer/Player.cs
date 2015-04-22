@@ -66,24 +66,29 @@ namespace CollisionDetectionPlatformer
             Velocity.X += Direction.X * MoveAcceleration * deltaTime;
             Velocity.X = MathHelper.Clamp(Velocity.X, -MaxMoveSpeed, MaxMoveSpeed);
 
-            if (!IsOnGround) {
+            if (Velocity.X != 0 || Velocity.Y != 0)
+            {
+                var v = TileMap.Map.TryMovePlayer(_position, Velocity * deltaTime, new Vector2(Math.Sign(Velocity.X), Math.Sign(Velocity.Y)));
+                _position += v;
+            }
+            else
+            {
+                _position += Velocity * deltaTime;
+            }
+
+            if (_position.Y > 254)
+                IsOnGround = true;
+
+
+            if (!IsOnGround)
+            {
                 Velocity.Y += 1 * Gravity * deltaTime;
             }
             else
             {
                 Velocity.Y = 0;
             }
-            
-            //if (velocity.X != 0)
-            //{
-            //    var v = TileMap.Map.TryMovePlayer(_position, velocity * deltaTime, new Vector2(Math.Sign(velocity.X), Math.Sign(velocity.Y)));
-            //    _position += v;
-                
-            //}
-            //else
-            //{
-                _position += Velocity * deltaTime;
-            //}
+            // _position += Velocity * deltaTime;
             Velocity.X *= GroundDragFactor;
             
             Direction = Vector2.Zero;

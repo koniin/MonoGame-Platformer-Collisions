@@ -77,14 +77,14 @@ namespace CollisionDetectionPlatformer
 
             //player.Update((float)gameTime.ElapsedGameTime.TotalMilliseconds, (float)gameTime.ElapsedGameTime.TotalSeconds);
             player.Update((float)gameTime.ElapsedGameTime.TotalSeconds, 0);
-            var a = collisioHandler.CheckCollision(player.BoundingBox, tileMap);
-            if (a != Vector2.Zero)
-            {
-                player._position = a;
-                /*
-                if(player.IsOnGround)
-                    player.Velocity.Y = Vector2.Zero.Y; */
-            }
+            //var a = collisioHandler.CheckCollision(player.BoundingBox, tileMap);
+            //if (a != Vector2.Zero)
+            //{
+            //    player._position = a;
+            //    /*
+            //    if(player.IsOnGround)
+            //        player.Velocity.Y = Vector2.Zero.Y; */
+            //}
             base.Update(gameTime);
         }
 

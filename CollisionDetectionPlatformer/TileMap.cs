@@ -30,6 +30,10 @@ namespace CollisionDetectionPlatformer
                     };
                     if (x == 0 || x == gridSize.X - 1 || y == 0 || y == gridSize.Y - 1)
                         Tiles[x, y].IsSolid = true;
+                    if (y == gridSize.Y - 2 && x == 5)
+                    {
+                        Tiles[x, y].IsSolid = true;
+                    }
                 }
             }
         }
@@ -63,6 +67,8 @@ namespace CollisionDetectionPlatformer
             // direction.X => positive is moving right, negative is moving left
             // direction.Y => positive is moving down, negative is moving up
 
+            Vector2 returnVector = Vector2.Zero;
+
             // First find tiles in Y where we are moving to
             // Step X first
             if (direction.X != 0)
@@ -71,9 +77,14 @@ namespace CollisionDetectionPlatformer
                 // Get the coordinate of the forward-facing edge, e.g. : If walking left, 
                 // the x coordinate of left of bounding box. 
                 // If walking right, x coordinate of right side. If up, y coordinate of top, etc.
+                //  ____
+                // X    |
+                // |    |
+                // X____|
+                //
                 float boxEdge = direction.X > 0 ? position.X + _tileSize : position.X;
                 Vector2 topPoint = new Vector2(boxEdge, position.Y);
-                Vector2 bottomPoint = new Vector2(boxEdge, position.Y + _tileSize);
+                Vector2 bottomPoint = new Vector2(boxEdge, position.Y + _tileSize - 1);
 
                 /*
                     Figure which lines of tiles the bounding box intersects with – this will give you a minimum and maximum tile 
@@ -104,17 +115,79 @@ namespace CollisionDetectionPlatformer
                 if (direction.X > 0)
                 {
                     var movementX = Math.Min(Math.Min(solid1.X, solid2.X) - topPoint.X, moveAmount.X);
-                    return new Vector2(movementX, 0);
+                    returnVector.X = movementX;
                 }
                 else
                 {
-                    var movementX = Math.Min(topPoint.X - Math.Min(solid1.X + _tileSize, solid2.X + _tileSize), moveAmount.X);
-                    if (movementX < moveAmount.X)
+                    var firstCollidingObjectX = Math.Min(solid1.X + _tileSize, solid2.X + _tileSize);
+                    var movementX = Math.Min(topPoint.X - firstCollidingObjectX, -moveAmount.X);
+                    if (movementX > moveAmount.X)
                         movementX = -movementX;
-                    return new Vector2(movementX, 0);
+                    returnVector.X = movementX;
                 }
             }
-            return Vector2.Zero;
+            if (direction.Y != 0)
+            {
+                // For larger objects we need more points (same size sprite yields max 2 tiles)
+                // Get the coordinate of the forward-facing edge, e.g. : If walking down, 
+                // the y coordinate of down of bounding box. 
+                // If walking right, x coordinate of right side. If up, y coordinate of top, etc.
+                //  ____
+                // |    |
+                // |    |
+                // X____X
+
+                float boxEdge = direction.Y > 0 ? position.Y + _tileSize : position.Y;
+                Vector2 leftBottomPoint = new Vector2(position.X, boxEdge);
+                Vector2 rightBottomPoint = new Vector2(position.X + _tileSize - 1, boxEdge);
+
+                /*
+                    Figure which lines of tiles the bounding box intersects with – this will give you a minimum and maximum tile 
+                    value on the OPPOSITE axis. For example, if we’re walking left, perhaps the 
+                    player intersects with horizontal rows 32, 33 and 34 (that is, tiles with y = 32 * TS, y = 33 * TS, and y = 34 * TS, 
+                    where TS = tile size).
+                */
+                var tileTop = PositionToTile(leftBottomPoint);
+                var tileBottom = PositionToTile(rightBottomPoint);
+
+                // -- debug 
+                tileTop.Intersected = true;
+                tileBottom.Intersected = true;
+
+                // --
+
+                /*
+                    Scan along those lines of tiles and towards the direction of movement until you find the closest static obstacle. 
+                    NOT IMPLEMENTED -> Then loop through every moving obstacle, and determine which is the closest obstacle that is actually on your path.
+                */
+                var solid1 = GetNextSolidY(leftBottomPoint, (int)direction.Y);
+                var solid2 = GetNextSolidY(rightBottomPoint, (int)direction.Y);
+
+                /*
+                    The total movement of the player along that direction is then the minimum between the distance to 
+                    closest obstacle,  and the amount that you wanted to move in the first place.
+                */
+                if (direction.Y > 0)
+                {
+                    
+                    if (leftBottomPoint.Y + moveAmount.Y > Math.Min(solid1.Y, solid2.Y))
+                        Player.Playa.IsOnGround = true;
+                   
+                    var movementY = Math.Min(Math.Min(solid1.Y, solid2.Y) - leftBottomPoint.Y, moveAmount.Y);
+                    returnVector.Y = movementY;
+                }
+                else
+                {
+                    var firstCollidingObjectY = Math.Min(solid1.Y + _tileSize, solid2.Y + _tileSize);
+                    var movementY = Math.Min(leftBottomPoint.Y - firstCollidingObjectY, -moveAmount.Y);
+                    if (movementY > moveAmount.Y)
+                    {
+                        movementY = -movementY;
+                    }
+                    returnVector.Y = movementY;
+                }
+            }
+            return returnVector;
         }
         
         public Tile PositionToTile(Vector2 position)
@@ -124,9 +197,9 @@ namespace CollisionDetectionPlatformer
 
         private Tile PositionToTile(float x, float y)
         {
-            int tileX = (int)(x / _tileSize);
-            int tileY = (int)(y / _tileSize);
-            return Tiles[tileY, tileX];
+            int tileX = (int)(Math.Floor(x / _tileSize));
+            int tileY = (int)(Math.Floor(y / _tileSize));
+            return Tiles[tileX, tileY];
         }
 
         public Tile GetTile(Vector2 position)
@@ -148,9 +221,9 @@ namespace CollisionDetectionPlatformer
 
         public Vector2 GetNextSolidX(Vector2 pos, int direction)
         {
-            for (int x = (int)(pos.X / _tileSize); x < _gridSize.X; x += direction)
+            for (int x = (int)Math.Floor(pos.X / _tileSize); x < _gridSize.X; x += direction)
             {
-                if (Tiles[x, (int)(pos.Y / _tileSize)].IsSolid)
+                if (Tiles[x, (int)Math.Floor(pos.Y / _tileSize)].IsSolid)
                 {
                     return new Vector2(x * _tileSize, pos.Y);
                 }
@@ -160,11 +233,11 @@ namespace CollisionDetectionPlatformer
 
         public Vector2 GetNextSolidY(Vector2 pos, int direction)
         {
-            for (int y = (int)(pos.Y / _tileSize); y < _gridSize.Y; y += direction)
+            for (int y = (int)Math.Floor(pos.Y / _tileSize); y < _gridSize.Y; y += direction)
             {
-                if (Tiles[(int)(pos.X / _tileSize), y].IsSolid)
+                if (Tiles[(int)Math.Floor(pos.X / _tileSize), y].IsSolid)
                 {
-                    return new Vector2(pos.X, y);
+                    return new Vector2(pos.X, y * _tileSize);
                 }
             }
             return Vector2.Zero;
@@ -181,25 +254,30 @@ namespace CollisionDetectionPlatformer
                 {
                     if (y == 0 && x == 0)
                     {
-                        DrawRectangle(batch, new Rectangle(x * _tileSize, y * _tileSize, _tileSize, _tileSize), 1, Color.Cyan);
+                        DrawRectangle(batch, y, x, _tileSize, 1, Color.Cyan);
                     }
                     else if (y == _gridSize.Y - 1 && x == 0)
                     {
-                        DrawRectangle(batch, new Rectangle(x * _tileSize, y * _tileSize, _tileSize, _tileSize), 1, Color.Pink);
+                        DrawRectangle(batch, y, x, _tileSize, 1, Color.Pink);
                     }
                     else
                     {
                         if (Tiles[y, x].Intersected)
-                            DrawRectangle(batch, new Rectangle(x * _tileSize, y * _tileSize, _tileSize, _tileSize), 1, Color.Blue);
+                            DrawRectangle(batch, y, x, _tileSize, 1, Color.Blue);
                         if (Tiles[y, x].IsSolid)
-                            DrawRectangle(batch, new Rectangle(x * _tileSize, y * _tileSize, _tileSize, _tileSize), 1, Color.Red);
+                            DrawRectangle(batch, y, x, _tileSize, 1, Color.Red);
                         if (Tiles[y, x].IsSolid && Tiles[y, x].Intersected)
-                            DrawRectangle(batch, new Rectangle(x * _tileSize, y * _tileSize, _tileSize, _tileSize), 1, Color.Yellow);
+                            DrawRectangle(batch, y, x, _tileSize, 1, Color.Yellow);
                         
                     }
                 }
             }
             
+        }
+
+        private void DrawRectangle(SpriteBatch batch, int x, int y, int tileSize, int width, Color color)
+        {
+            DrawRectangle(batch, new Rectangle(x * _tileSize, y * _tileSize, _tileSize, _tileSize), 1, color);
         }
 
         private void DrawRectangle(SpriteBatch batch, Rectangle area, int width, Color color)
