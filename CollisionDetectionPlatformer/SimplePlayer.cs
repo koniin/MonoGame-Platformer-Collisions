@@ -11,7 +11,7 @@ namespace CollisionDetectionPlatformer
     public class SimplePlayer
     {
         private const float Gravity = 300f;
-        private const float ACCEL = 200f;
+        private const float ACCEL = 900f;
         private const float FRICTION = 300f;
         private const float MAXDX = 300f;
         private const float MAXDY = 500f;
@@ -57,6 +57,8 @@ namespace CollisionDetectionPlatformer
             wasLeft = dx < 0;
             wasRight = dx > 0;
 
+            ddx = 0;
+            ddy = Gravity;
 
             if (left)
                 ddx = ddx - ACCEL;     // player wants to go left

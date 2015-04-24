@@ -16,6 +16,11 @@ namespace CollisionDetectionPlatformer
             return point*32;
         }
 
+        // https://github.com/jakesgordon/javascript-tiny-platformer/blob/master/platformer.js
+        // http://codeincomplete.com/posts/2013/5/27/tiny_platformer/
+
+        // Needs to fix acceleration after hitting a wall
+
         internal void Collide(SimplePlayer player, TileMap tileMap)
         {
             int tx = PointToTile(player.x);
