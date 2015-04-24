@@ -11,8 +11,8 @@ namespace CollisionDetectionPlatformer
     public class SimplePlayer
     {
         private const float Gravity = 300f;
-        private const float ACCEL = 300f;
-        private const float FRICTION = 100f;
+        private const float ACCEL = 200f;
+        private const float FRICTION = 300f;
         private const float MAXDX = 300f;
         private const float MAXDY = 500f;
 

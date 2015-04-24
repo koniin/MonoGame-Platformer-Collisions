@@ -53,24 +53,24 @@ namespace CollisionDetectionPlatformer
             //    }
             //}
 
-            //if (player.dx > 0)
-            //{
-            //    if ((cellright && !cell) ||
-            //        (celldiag && !celldown && ny))
-            //    {
-            //        player.x = ToTilePoint(tx);
-            //        player.dx = 0;
-            //    }
-            //}
-            //else if (player.dx < 0)
-            //{
-            //    if ((cell && !cellright) ||
-            //        (celldown && !celldiag && ny))
-            //    {
-            //        player.x = ToTilePoint(tx + 1);
-            //        player.dx = 0;
-            //    }
-            //}
+            if (player.dx > 0)
+            {
+                if ((cellRight.IsSolid && !cell.IsSolid) ||
+                    (cellDiag.IsSolid && !cellDown.IsSolid && ny != 0))
+                {
+                    player.x = TileToPoint(tx);
+                    player.dx = 0;
+                }
+            }
+            else if (player.dx < 0)
+            {
+                if ((cell.IsSolid && !cellRight.IsSolid) ||
+                    (cellDown.IsSolid && !cellDiag.IsSolid && ny != 0))
+                {
+                    player.x = TileToPoint(tx + 1);
+                    player.dx = 0;
+                }
+            }
         }
     }
 }
