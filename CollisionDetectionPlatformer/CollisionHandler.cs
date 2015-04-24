@@ -66,7 +66,7 @@ if (intersects(pRect, oRect))
             int bottomTile = (int)Math.Ceiling(((float)bounds.Bottom / 32)) - 1;
 
             bool hasCollision = false;
-
+            Player.Playa.IsOnGround = false;
             for (int y = topTile; y <= bottomTile; ++y)
             {
                 for (int x = leftTile; x <= rightTile; ++x)
@@ -112,7 +112,7 @@ if (intersects(pRect, oRect))
                                 //return new Vector2(box.X + depth.X, box.Y);
                                 // Resolve the collision along the X axis.
                                 // Position = new Vector2(Position.X + depth.X, Position.Y);
-
+                                Player.Playa.Velocity.X = 0;
                                 // Perform further collisions with the new bounds.
                                 // bounds = BoundingRectangle;
                                 bounds = new Rectangle(box.X + (int)Math.Round(depth.X), box.Y, 32, 32);

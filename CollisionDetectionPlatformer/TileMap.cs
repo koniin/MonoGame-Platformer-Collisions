@@ -202,6 +202,11 @@ namespace CollisionDetectionPlatformer
             return Tiles[tileX, tileY];
         }
 
+        public Tile GetTile(int x, int y)
+        {
+            return Tiles[x, y];
+        }
+
         public Tile GetTile(Vector2 position)
         {
             return Tiles[(int)position.X, (int)position.Y];

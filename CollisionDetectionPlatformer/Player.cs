@@ -21,7 +21,7 @@ namespace CollisionDetectionPlatformer
 
         private const float MoveAcceleration = 300f;
         private const float MaxMoveSpeed = 500f;
-        private const float GroundDragFactor = 0.98f;
+        private const float GroundDragFactor = 0.97f;
         private const float Gravity = 300f;
 
         public Rectangle BoundingBox { 
@@ -30,7 +30,7 @@ namespace CollisionDetectionPlatformer
             }
         }
 
-        public Vector2 Direction { get; set; }
+        public Vector2 Direction;
         public Vector2 _position;
         public Vector2 Velocity;
 
@@ -52,7 +52,8 @@ namespace CollisionDetectionPlatformer
             }
             if (currentKeyBoardState.IsKeyDown(Keys.Up))
             {
-                // Jump
+                IsOnGround = false;
+                Velocity.Y = -150;
             }
             if (currentKeyBoardState.IsKeyDown(Keys.Left))
             {
@@ -66,23 +67,23 @@ namespace CollisionDetectionPlatformer
             Velocity.X += Direction.X * MoveAcceleration * deltaTime;
             Velocity.X = MathHelper.Clamp(Velocity.X, -MaxMoveSpeed, MaxMoveSpeed);
 
-            if (Velocity.X != 0 || Velocity.Y != 0)
-            {
-                var v = TileMap.Map.TryMovePlayer(_position, Velocity * deltaTime, new Vector2(Math.Sign(Velocity.X), Math.Sign(Velocity.Y)));
-                _position += v;
-            }
-            else
-            {
+            //if (Velocity.X != 0 || Velocity.Y != 0)
+            //{
+            //    var v = TileMap.Map.TryMovePlayer(_position, Velocity * deltaTime, new Vector2(Math.Sign(Velocity.X), Math.Sign(Velocity.Y)));
+            //    _position += v;
+            //}
+            //else
+            //{
                 _position += Velocity * deltaTime;
-            }
+            //}
 
-            if (_position.Y > 254)
-                IsOnGround = true;
+            //if (_position.Y > 254)
+            //    IsOnGround = true;
 
 
             if (!IsOnGround)
             {
-                Velocity.Y += 1 * Gravity * deltaTime;
+                Velocity.Y += Gravity * deltaTime;
             }
             else
             {
