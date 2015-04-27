@@ -43,9 +43,10 @@ namespace CollisionDetectionPlatformer
             Velocity = new Vector2();
         }
 
-        public void Update(float deltaTime, float dt)
+        public void Update(float deltaTime)
         {
             Vector2 lastPos = _position;
+            Direction = Vector2.Zero;
 
             KeyboardState currentKeyBoardState = Keyboard.GetState();
             if (lastKeyBoardState.IsKeyDown(Keys.Up) && currentKeyBoardState.IsKeyUp(Keys.Up)) {
@@ -64,22 +65,7 @@ namespace CollisionDetectionPlatformer
                 Direction = Vector2.UnitX;
             }
 
-            Velocity.X += Direction.X * MoveAcceleration * deltaTime;
-            Velocity.X = MathHelper.Clamp(Velocity.X, -MaxMoveSpeed, MaxMoveSpeed);
-
-            //if (Velocity.X != 0 || Velocity.Y != 0)
-            //{
-            //    var v = TileMap.Map.TryMovePlayer(_position, Velocity * deltaTime, new Vector2(Math.Sign(Velocity.X), Math.Sign(Velocity.Y)));
-            //    _position += v;
-            //}
-            //else
-            //{
-                _position += Velocity * deltaTime;
-            //}
-
-            //if (_position.Y > 254)
-            //    IsOnGround = true;
-
+            Velocity.X = Direction.X * MoveAcceleration;
 
             if (!IsOnGround)
             {
@@ -89,10 +75,9 @@ namespace CollisionDetectionPlatformer
             {
                 Velocity.Y = 0;
             }
-            // _position += Velocity * deltaTime;
-            Velocity.X *= GroundDragFactor;
+
+            _position += Velocity * deltaTime;
             
-            Direction = Vector2.Zero;
         }
 
         public void Render(SpriteBatch batch)

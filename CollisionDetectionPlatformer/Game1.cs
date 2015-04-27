@@ -19,8 +19,11 @@ namespace CollisionDetectionPlatformer
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         TileMap tileMap;
-        SimplePlayer player;
-        CollisionHandler collisioHandler;
+        //Player player;
+        //SimplePlayer player;
+        CollisionHandlingPlayer player;
+        CollisionHandler collisionHandler;
+        CollisionHandler2 collisionHandler2;
         SimpleCollisionHandler simpleCollisionHandler;
 
         public Game1()
@@ -38,10 +41,11 @@ namespace CollisionDetectionPlatformer
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             tileMap = new TileMap(32, new Point(10,10));
-            player = new SimplePlayer(new Vector2(74, 62));
-            collisioHandler = new CollisionHandler();
+            //player = new SimplePlayer(new Vector2(74, 62));
+            player = new CollisionHandlingPlayer(new Vector2(74, 62));
+            collisionHandler = new CollisionHandler();
+            collisionHandler2 = new CollisionHandler2();
             simpleCollisionHandler = new SimpleCollisionHandler();
             base.Initialize();
         }
@@ -77,9 +81,13 @@ namespace CollisionDetectionPlatformer
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            //player.Update((float)gameTime.ElapsedGameTime.TotalMilliseconds, (float)gameTime.ElapsedGameTime.TotalSeconds);
             player.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-            simpleCollisionHandler.Collide(player, tileMap);
+            /*
+            Vector2 pos = collisionHandler2.CheckCollision(player.BoundingBox, tileMap);
+            if(pos != Vector2.Zero)
+                Player.Playa._position = pos;
+             * */
+            //simpleCollisionHandler.Collide(player, tileMap);
             base.Update(gameTime);
         }
 

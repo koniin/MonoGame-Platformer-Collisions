@@ -8,48 +8,6 @@ namespace CollisionDetectionPlatformer
 {
     public class CollisionHandler
     {
-        /* 
-         * 
-         * 
-         * Once you know that your rectangles collided, 
-         * you can use the square of the distance between them to 
-         * know from which side the collision took place.
-         * 
-         * 
-         * 
-         * 
-var pRect; // Player rectangle
-var oRect; // Other rectangle
-
-if (intersects(pRect, oRect))
-{
-    // Calculate the vertical and horizontal
-    // length between the centres of rectangles
-
-    var hd = abs((pRect.centerX * pRect.centerX) + (oRect.centerX * oRect.centerX));
-    var vd = abs((pRect.centerY * pRect.centerY) + (oRect.centerY * oRect.centerY));
-
-    // Now compare them to know the side of collision
-
-    if (hd < vd)
-    {
-        if (pRect.centerX < oRect.centerX)
-            // Collision on right side of player
-        else
-            // Collision on left side of player
-    } 
-    else if (vd < hd)
-    {
-        if (pRect.centerY < oRect.centerY)
-            // Collision on bottom side of player
-        else
-            // Collision on top side of player
-    }
-}
-         * */
-
-
-
         public Vector2 CheckCollision(Rectangle box, TileMap tileMap)
         {
             // foreach tile around - check if we are colliding
@@ -105,7 +63,7 @@ if (intersects(pRect, oRect))
                                     // Perform further collisions with the new bounds.
                                     bounds = BoundingRectangle;
                                 }*/
-                                bounds = new Rectangle(box.X, box.Y + (int)Math.Round(depth.Y), 32, 32);
+                                bounds = new Rectangle(box.X, box.Y + (int)Math.Ceiling(depth.Y), 32, 32);
                             }
                             else // if (collision == TileCollision.Impassable) // Ignore platforms.
                             {
@@ -115,7 +73,7 @@ if (intersects(pRect, oRect))
                                 Player.Playa.Velocity.X = 0;
                                 // Perform further collisions with the new bounds.
                                 // bounds = BoundingRectangle;
-                                bounds = new Rectangle(box.X + (int)Math.Round(depth.X), box.Y, 32, 32);
+                                bounds = new Rectangle(box.X + (int)Math.Ceiling(depth.X), box.Y, 32, 32);
                             }
                         }
                     }

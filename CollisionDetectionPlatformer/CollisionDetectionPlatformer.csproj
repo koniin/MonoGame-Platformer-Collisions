@@ -36,6 +36,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CollisionHandler.cs" />
+    <Compile Include="CollisionHandler2.cs" />
+    <Compile Include="CollisionHandlingPlayer.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />

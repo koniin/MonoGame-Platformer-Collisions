@@ -13,12 +13,13 @@ namespace CollisionDetectionPlatformer
         private const float Gravity = 300f;
         private const float ACCEL = 900f;
         private const float FRICTION = 300f;
+        private const float JUMP = 10000f;
         private const float MAXDX = 300f;
-        private const float MAXDY = 500f;
+        private const float MAXDY = 1200f;
 
         bool wasLeft = false;
         bool wasRight = false;
-        public bool falling = false;
+        public bool falling = true;
         public bool jumping = false;
 
         public float dx;
@@ -39,10 +40,15 @@ namespace CollisionDetectionPlatformer
         {
             bool left = false;
             bool right = false;
+            bool jump = false;
+
+            float acceleration = falling ? ACCEL * 0.5f : ACCEL;
+            float friction = falling ? FRICTION * 0.5f : FRICTION;
 
             KeyboardState currentKeyBoardState = Keyboard.GetState();
             if (currentKeyBoardState.IsKeyDown(Keys.Up))
             {
+                jump = true;
             }
             if (currentKeyBoardState.IsKeyDown(Keys.Left))
             {
@@ -53,33 +59,30 @@ namespace CollisionDetectionPlatformer
                 right = true;
             }
 
-
             wasLeft = dx < 0;
             wasRight = dx > 0;
-
             ddx = 0;
             ddy = Gravity;
 
             if (left)
-                ddx = ddx - ACCEL;     // player wants to go left
+                ddx = ddx - acceleration;     // player wants to go left
             else if (wasLeft)
-                ddx = ddx + FRICTION;  // player was going left, but not any more
+                ddx = ddx + friction;  // player was going left, but not any more
 
             if (right)
-                ddx = ddx + ACCEL;     // player wants to go right
+                ddx = ddx + acceleration;     // player wants to go right
             else if (wasRight)
-                ddx = ddx - FRICTION;  // player was going right, but not any more
+                ddx = ddx - friction;  // player was going right, but not any more
 
-            /*
-            if (player.jump && !player.jumping && !falling)
+            
+            if (jump && !jumping && !falling)
             {
-                player.ddy = player.ddy - JUMP;     // apply an instantaneous (large) vertical impulse
-                player.jumping = true;
+                ddy = ddy - JUMP;     // apply an instantaneous (large) vertical impulse
+                jumping = true;
             }
-             * */
 
-            y = (int)Math.Floor(y + (dt * dy));
             x = (int)Math.Floor(x + (dt * dx));
+            y = (int)Math.Floor(y + (dt * dy));
             dx = MathHelper.Clamp(dx + (dt * ddx), -MAXDX, MAXDX);
             dy = MathHelper.Clamp(dy + (dt * ddy), -MAXDY, MAXDY);
 

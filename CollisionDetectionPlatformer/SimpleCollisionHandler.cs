@@ -19,8 +19,6 @@ namespace CollisionDetectionPlatformer
         // https://github.com/jakesgordon/javascript-tiny-platformer/blob/master/platformer.js
         // http://codeincomplete.com/posts/2013/5/27/tiny_platformer/
 
-        // Needs to fix acceleration after hitting a wall
-
         internal void Collide(SimplePlayer player, TileMap tileMap)
         {
             int tx = PointToTile(player.x);
@@ -45,18 +43,18 @@ namespace CollisionDetectionPlatformer
                     ny = 0;
                 }
             }
-            //else if (entity.dy < 0)
-            //{
-            //    if ((cell && !celldown) ||
-            //        (cellright && !celldiag && nx))
-            //    {
-            //        entity.y = t2p(ty + 1);
-            //        entity.dy = 0;
-            //        cell = celldown;
-            //        cellright = celldiag;
-            //        ny = 0;
-            //    }
-            //}
+            else if (player.dy < 0)
+            {
+                if ((cell.IsSolid && !cellDown.IsSolid) ||
+                    (cellRight.IsSolid && !cellDiag.IsSolid && nx != 0))
+                {
+                    player.y = TileToPoint(ty + 1);
+                    player.dy = 0;
+                    cell = cellDown;
+                    cellRight = cellDiag;
+                    ny = 0;
+                }
+            }
 
             if (player.dx > 0)
             {
@@ -76,6 +74,8 @@ namespace CollisionDetectionPlatformer
                     player.dx = 0;
                 }
             }
+
+            player.falling = !(cellDown.IsSolid || (nx != 0 && cellDiag.IsSolid));
         }
     }
 }
