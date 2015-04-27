@@ -34,6 +34,11 @@ namespace CollisionDetectionPlatformer
                     {
                         Tiles[x, y].IsSolid = true;
                     }
+
+                    if (y == gridSize.Y - 4 && x == _gridSize.X - 3)
+                    {
+                        Tiles[x, y].IsSolid = true;
+                    }
                 }
             }
         }

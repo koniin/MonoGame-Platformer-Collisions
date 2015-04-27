@@ -20,7 +20,8 @@ namespace CollisionDetectionPlatformer
         private Vector2 Position;
         private Vector2 Velocity;
 
-        bool IsOnGround = false;
+        bool jumping = false;
+        bool paused = false;
 
         public CollisionHandlingPlayer(Vector2 position)
         {
@@ -30,68 +31,72 @@ namespace CollisionDetectionPlatformer
 
         internal void Update(float deltaTime)
         {
-            bool left = false;
-            bool right = false;
-            bool jump = false;
+            if (!paused)
+            {
 
-            KeyboardState currentKeyBoardState = Keyboard.GetState();
-            if (currentKeyBoardState.IsKeyDown(Keys.Up))
-            {
-                jump = true;
-            }
-            if (currentKeyBoardState.IsKeyDown(Keys.Left))
-            {
-                left = true;
-            }
-            if (currentKeyBoardState.IsKeyDown(Keys.Right))
-            {
-                right = true;
-            }
+                bool left = false;
+                bool right = false;
+                bool jump = false;
 
-            if (left)
-            {
-                Velocity.X -= ACCEL * deltaTime;
-            }
-            else if (right)
-            {
-                Velocity.X += ACCEL * deltaTime;
-            }
+                KeyboardState currentKeyBoardState = Keyboard.GetState();
+                if (currentKeyBoardState.IsKeyDown(Keys.Up))
+                {
+                    jump = true;
+                }
+                if (currentKeyBoardState.IsKeyDown(Keys.Left))
+                {
+                    left = true;
+                }
+                if (currentKeyBoardState.IsKeyDown(Keys.Right))
+                {
+                    right = true;
+                }
 
-            if(IsOnGround && jump)
-            {
-                IsOnGround = false;
-                Velocity.Y = -JUMP * deltaTime;
-            }
+                if (left)
+                {
+                    Velocity.X -= ACCEL * deltaTime;
+                }
+                else if (right)
+                {
+                    Velocity.X += ACCEL * deltaTime;
+                }
 
-            Velocity.X = MathHelper.Clamp(Velocity.X, -MAXDX, MAXDX);
+                if (jump && !jumping)
+                {
+                    Velocity.Y = -JUMP * deltaTime;
+                    jumping = true;
+                }
 
-            Move(deltaTime);
-
-            if (Velocity.X > 0)
-            {
-                Velocity.X -= FRICTION * deltaTime;
-                if (Velocity.X < 0)
-                    Velocity.X = 0;
-
-            }
-            else if (Velocity.X < 0)
-            {
-                Velocity.X += FRICTION * deltaTime;
                 if (Velocity.X > 0)
-                    Velocity.X = 0;
-            }
+                {
+                    Velocity.X -= FRICTION * deltaTime;
+                    if (Velocity.X < 0)
+                        Velocity.X = 0;
 
-            if (!IsOnGround)
+                }
+                else if (Velocity.X < 0)
+                {
+                    Velocity.X += FRICTION * deltaTime;
+                    if (Velocity.X > 0)
+                        Velocity.X = 0;
+                }
+
                 Velocity.Y += Gravity * deltaTime;
+                Velocity.X = MathHelper.Clamp(Velocity.X, -MAXDX, MAXDX);
+
+
+                Move(deltaTime);
+            }
         }
 
         private void Move(float deltaTime)
         {
+
             TileMap tileMap = TileMap.Map;
 
             Vector2 newPos = new Vector2(Position.X + Velocity.X * deltaTime, Position.Y + Velocity.Y * deltaTime);
 
-            Rectangle box = new Rectangle((int)newPos.X, (int)newPos.Y, 32, 32);
+            Rectangle box = new Rectangle((int)newPos.X, (int)Position.Y, 32, 32);
             Vector2 topLeftPoint = new Vector2(box.X, box.Y);
             Vector2 topRightPoint = new Vector2(box.X + box.Width, box.Y);
             Vector2 bottomLeftPoint = new Vector2(box.X, box.Y + box.Height);
@@ -104,12 +109,12 @@ namespace CollisionDetectionPlatformer
 
             if (Velocity.X > 0.0f)
             {
-                if (tileRight.IsSolid && box.Intersects(tileRight.BoundingBox))
+                if (tileRight.IsSolid && !tile.IsSolid)
                 {
                     newPos.X = (tileRight.Position.X * 32) - box.Width;
                     Velocity.X = 0;
                 }
-                else if (tileBottomRight.IsSolid && box.Intersects(tileBottomRight.BoundingBox))
+                else if (tileBottomRight.IsSolid && !tileBottomLeft.IsSolid)
                 {
                     newPos.X = (tileBottomRight.Position.X * 32) - box.Width;
                     Velocity.X = 0;
@@ -117,12 +122,12 @@ namespace CollisionDetectionPlatformer
             }
             else if (Velocity.X < 0.0f)
             {
-                if (tile.IsSolid && box.Intersects(tile.BoundingBox))
+                if (tile.IsSolid)
                 {
                     newPos.X = (tile.Position.X * 32) + 32;
                     Velocity.X = 0;
                 }
-                else if (tileBottomLeft.IsSolid && box.Intersects(tileBottomLeft.BoundingBox))
+                else if (tileBottomLeft.IsSolid)
                 {
                     newPos.X = (tileBottomLeft.Position.X * 32) + 32;
                     Velocity.X = 0;
@@ -130,15 +135,6 @@ namespace CollisionDetectionPlatformer
             }
 
             box = new Rectangle((int)newPos.X, (int)newPos.Y, 32, 32);
-            topLeftPoint = new Vector2(box.X, box.Y);
-            topRightPoint = new Vector2(box.X + box.Width, box.Y);
-            bottomLeftPoint = new Vector2(box.X, box.Y + box.Height);
-            bottomRightPoint = new Vector2(box.X + box.Width, box.Y + box.Height);
-
-            tile = tileMap.PositionToTile(topLeftPoint);
-            tileRight = tileMap.PositionToTile(topRightPoint);
-            tileBottomLeft = tileMap.PositionToTile(bottomLeftPoint);
-            tileBottomRight = tileMap.PositionToTile(bottomRightPoint);
 
             if (Velocity.Y > 0.0f)
             {
@@ -146,13 +142,13 @@ namespace CollisionDetectionPlatformer
                 {
                     newPos.Y = (tile.Position.Y * 32);
                     Velocity.Y = 0;
-                    IsOnGround = true;
+                    jumping = false;
                 }
                 else if (tileBottomRight.IsSolid && box.Intersects(tileBottomRight.BoundingBox))
                 {
                     newPos.Y = (tileBottomRight.Position.Y * 32) - 32;
                     Velocity.Y = 0;
-                    IsOnGround = true;
+                    jumping = false;
                 }
             }
             else if (Velocity.Y < 0.0f)
