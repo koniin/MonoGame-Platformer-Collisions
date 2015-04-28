@@ -20,7 +20,7 @@ namespace CollisionDetectionPlatformer
         private Vector2 Position;
         private Vector2 Velocity;
 
-        bool jumping = false;
+        bool jumping = true;
         bool paused = false;
 
         public CollisionHandlingPlayer(Vector2 position)
@@ -81,7 +81,11 @@ namespace CollisionDetectionPlatformer
                         Velocity.X = 0;
                 }
 
-                Velocity.Y += Gravity * deltaTime;
+                if (jumping)
+                {
+                    Velocity.Y += Gravity * deltaTime;
+                }
+
                 Velocity.X = MathHelper.Clamp(Velocity.X, -MAXDX, MAXDX);
 
 
@@ -107,34 +111,29 @@ namespace CollisionDetectionPlatformer
             var tileBottomLeft = tileMap.PositionToTile(bottomLeftPoint);
             var tileBottomRight = tileMap.PositionToTile(bottomRightPoint);
 
+            if (!tileBottomLeft.IsSolid && !tileBottomRight.IsSolid)
+                jumping = true;
+
             if (Velocity.X > 0.0f)
             {
-                if (tileRight.IsSolid && !tile.IsSolid)
+                if (tileRight.IsSolid && !tile.IsSolid && box.Intersects(tileRight.BoundingBox)
+                    || (tileBottomRight.IsSolid && box.Intersects(tileBottomRight.BoundingBox) && Velocity.Y != 0))
                 {
                     newPos.X = (tileRight.Position.X * 32) - box.Width;
-                    Velocity.X = 0;
-                }
-                else if (tileBottomRight.IsSolid && !tileBottomLeft.IsSolid)
-                {
-                    newPos.X = (tileBottomRight.Position.X * 32) - box.Width;
                     Velocity.X = 0;
                 }
             }
             else if (Velocity.X < 0.0f)
             {
-                if (tile.IsSolid)
+                if (tile.IsSolid && !tileRight.IsSolid && box.Intersects(tile.BoundingBox)
+                    || (tileBottomLeft.IsSolid && box.Intersects(tileBottomLeft.BoundingBox) && Velocity.Y != 0))
                 {
                     newPos.X = (tile.Position.X * 32) + 32;
                     Velocity.X = 0;
                 }
-                else if (tileBottomLeft.IsSolid)
-                {
-                    newPos.X = (tileBottomLeft.Position.X * 32) + 32;
-                    Velocity.X = 0;
-                }
             }
 
-            box = new Rectangle((int)newPos.X, (int)newPos.Y, 32, 32);
+            box = new Rectangle((int)Position.X, (int)newPos.Y, 32, 32);
 
             if (Velocity.Y > 0.0f)
             {
