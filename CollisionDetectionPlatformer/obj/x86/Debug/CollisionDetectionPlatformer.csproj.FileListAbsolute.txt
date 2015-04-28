@@ -23,3 +23,4 @@ C:\Code\CollisionDetectionPlatformer\CollisionDetectionPlatformer\bin\Windows\De
 C:\Code\CollisionDetectionPlatformer\CollisionDetectionPlatformer\obj\x86\Debug\CollisionDetectionPlatformer.csprojResolveAssemblyReference.cache
 C:\Code\CollisionDetectionPlatformer\CollisionDetectionPlatformer\obj\x86\Debug\CollisionDetectionPlatformer.exe
 C:\Code\CollisionDetectionPlatformer\CollisionDetectionPlatformer\obj\x86\Debug\CollisionDetectionPlatformer.pdb
+C:\Code\CollisionDetectionPlatformer\CollisionDetectionPlatformer\bin\Windows\Debug\Content\monolight12.xnb

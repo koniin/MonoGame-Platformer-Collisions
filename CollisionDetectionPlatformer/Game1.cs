@@ -18,6 +18,7 @@ namespace CollisionDetectionPlatformer
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        SpriteFont spriteFont;
         TileMap tileMap;
         //Player player;
         //SimplePlayer player;
@@ -25,6 +26,10 @@ namespace CollisionDetectionPlatformer
         CollisionHandler collisionHandler;
         CollisionHandler2 collisionHandler2;
         SimpleCollisionHandler simpleCollisionHandler;
+
+        int frameRate = 0;
+        int frameCounter = 0;
+        TimeSpan elapsedTime = TimeSpan.Zero;
 
         public Game1()
             : base()
@@ -58,7 +63,7 @@ namespace CollisionDetectionPlatformer
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
+            spriteFont = Content.Load<SpriteFont>("monolight12");
             // TODO: use this.Content to load your game content here
         }
 
@@ -81,6 +86,15 @@ namespace CollisionDetectionPlatformer
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            elapsedTime += gameTime.ElapsedGameTime;
+
+            if (elapsedTime > TimeSpan.FromSeconds(1))
+            {
+                elapsedTime -= TimeSpan.FromSeconds(1);
+                frameRate = frameCounter;
+                frameCounter = 0;
+            }
+
             player.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
             /*
             Vector2 pos = collisionHandler2.CheckCollision(player.BoundingBox, tileMap);
@@ -99,9 +113,16 @@ namespace CollisionDetectionPlatformer
         {
             GraphicsDevice.Clear(Color.Black);
 
+            frameCounter++;
+            string fps = string.Format("fps: {0}", frameRate);
+
             spriteBatch.Begin();
             tileMap.Render(spriteBatch);
             player.Render(spriteBatch);
+
+            spriteBatch.DrawString(spriteFont, fps, new Vector2(33, 33), Color.Black);
+            spriteBatch.DrawString(spriteFont, fps, new Vector2(32, 32), Color.White);
+
             spriteBatch.End();
 
             base.Draw(gameTime);
