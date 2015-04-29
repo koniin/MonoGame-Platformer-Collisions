@@ -124,9 +124,9 @@ namespace CollisionDetectionPlatformer
 
             isOnGround = false;
 
+            // Move X first
             if (velocity.X > 0)
             {
-                // Move X first
                 for (int x = 1; x <= Math.Abs(velocity.X * dt); x++)
                 {
                     boundingBox.X += directionX;
@@ -134,22 +134,15 @@ namespace CollisionDetectionPlatformer
                     Tile t2 = tileMap.PositionToTile(boundingBox.Right, boundingBox.Bottom);
                     if (t1.IsSolid && t1.BoundingBox.Intersects(boundingBox) || t2.IsSolid && t2.BoundingBox.Intersects(boundingBox))
                     {
-                        // Add sloping handling
+                        // Add slope handling
                         // Reset velocity x if hit
-
-                        if (t1.BoundingBox.Intersects(boundingBox))
-                            t1.Intersected = true;
-                        if (t2.BoundingBox.Intersects(boundingBox))
-                            t2.Intersected = true;
                         break;
                     }
                     newX = boundingBox.X;
                 }
             }
-
             if (velocity.X < 0)
             {
-                // Move X first
                 for (int x = 1; x <= Math.Abs(velocity.X * dt); x++)
                 {
                     boundingBox.X += directionX;
@@ -157,7 +150,7 @@ namespace CollisionDetectionPlatformer
                     Tile t2 = tileMap.PositionToTile(boundingBox.Left, boundingBox.Bottom);
                     if (t1.IsSolid && t1.BoundingBox.Intersects(boundingBox) || t2.IsSolid && t2.BoundingBox.Intersects(boundingBox))
                     {
-                        // Add sloping handling
+                        // Add slope handling
                         // Reset velocity x if hit
                         break;
                     }
@@ -165,9 +158,9 @@ namespace CollisionDetectionPlatformer
                 }
             }
 
+            // Move Y
             if (velocity.Y > 0)
             {
-                // Move Y
                 for (int y = 1; y < Math.Abs(velocity.Y * dt); y++)
                 {
                     boundingBox.Y += directionY;
@@ -176,7 +169,7 @@ namespace CollisionDetectionPlatformer
                     Tile t2 = tileMap.PositionToTile(newX + boundingBox.Width - 1, boundingBox.Bottom);
                     if (t1.IsSolid && t1.BoundingBox.Intersects(boundingBox) || t2.IsSolid && t2.BoundingBox.Intersects(boundingBox))
                     {
-                        // Add sloping handling
+                        // Add slope handling
                         // Reset velocity y if hit on bottom
                         // directionY == 1 ? Velocity.Y = 0
                         isOnGround = true;
@@ -185,10 +178,8 @@ namespace CollisionDetectionPlatformer
                     newY = boundingBox.Y;
                 }
             }
-
             if (velocity.Y < 0)
             {
-                // Move Y
                 for (int y = 1; y < Math.Abs(velocity.Y * dt); y++)
                 {
                     boundingBox.Y += directionY;
@@ -197,7 +188,7 @@ namespace CollisionDetectionPlatformer
                     Tile t2 = tileMap.PositionToTile(newX + boundingBox.Width - 1, boundingBox.Top);
                     if (t1.IsSolid && t1.BoundingBox.Intersects(boundingBox) || t2.IsSolid && t2.BoundingBox.Intersects(boundingBox))
                     {
-                        // Add sloping handling
+                        // Add slope handling
                         // Reset velocity y if hit on bottom
                         // directionY == 1 ? Velocity.Y = 0
                         //isJumping = false;
