@@ -95,7 +95,6 @@ namespace CollisionDetectionPlatformer
 
         private void Move(float deltaTime)
         {
-
             TileMap tileMap = TileMap.Map;
 
             Vector2 newPos = new Vector2(Position.X + Velocity.X * deltaTime, Position.Y + Velocity.Y * deltaTime);

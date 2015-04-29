@@ -21,10 +21,10 @@ namespace CollisionDetectionPlatformer
         SpriteFont spriteFont;
         TileMap tileMap;
         //Player player;
-        //SimplePlayer player;
-        CollisionHandlingPlayer player;
+        SimplePlayer simpleplayer;
+        //CollisionHandlingPlayer player;
+        PreCheckingPlayer preplayer;
         CollisionHandler collisionHandler;
-        CollisionHandler2 collisionHandler2;
         SimpleCollisionHandler simpleCollisionHandler;
 
         int frameRate = 0;
@@ -47,10 +47,10 @@ namespace CollisionDetectionPlatformer
         protected override void Initialize()
         {
             tileMap = new TileMap(32, new Point(10,10));
-            //player = new SimplePlayer(new Vector2(74, 62));
-            player = new CollisionHandlingPlayer(new Vector2(74, 62));
+            simpleplayer = new SimplePlayer(new Vector2(74, 62));
+            preplayer = new PreCheckingPlayer(new Vector2(74, 62));
+            //player = new CollisionHandlingPlayer(new Vector2(74, 62));
             collisionHandler = new CollisionHandler();
-            collisionHandler2 = new CollisionHandler2();
             simpleCollisionHandler = new SimpleCollisionHandler();
             base.Initialize();
         }
@@ -95,13 +95,20 @@ namespace CollisionDetectionPlatformer
                 frameCounter = 0;
             }
 
-            player.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            /*
+            // Simple player - works
+            simpleplayer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            simpleCollisionHandler.Collide(simpleplayer, tileMap);
+            */
+
+            preplayer.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+
             /*
             Vector2 pos = collisionHandler2.CheckCollision(player.BoundingBox, tileMap);
             if(pos != Vector2.Zero)
                 Player.Playa._position = pos;
              * */
-            //simpleCollisionHandler.Collide(player, tileMap);
+            
             base.Update(gameTime);
         }
 
@@ -118,10 +125,11 @@ namespace CollisionDetectionPlatformer
 
             spriteBatch.Begin();
             tileMap.Render(spriteBatch);
-            player.Render(spriteBatch);
+            //simpleplayer.Render(spriteBatch);
+            preplayer.Render(spriteBatch);
 
-            spriteBatch.DrawString(spriteFont, fps, new Vector2(33, 33), Color.Black);
-            spriteBatch.DrawString(spriteFont, fps, new Vector2(32, 32), Color.White);
+            spriteBatch.DrawString(spriteFont, fps, new Vector2(10, 10), Color.Black);
+            spriteBatch.DrawString(spriteFont, fps, new Vector2(9, 9), Color.White);
 
             spriteBatch.End();
 

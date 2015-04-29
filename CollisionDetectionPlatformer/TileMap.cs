@@ -200,10 +200,10 @@ namespace CollisionDetectionPlatformer
             return PositionToTile(position.X, position.Y);
         }
 
-        private Tile PositionToTile(float x, float y)
+        public Tile PositionToTile(float x, float y)
         {
-            int tileX = (int)(Math.Floor(x / _tileSize));
-            int tileY = (int)(Math.Floor(y / _tileSize));
+            int tileX = (int)(x / _tileSize);
+            int tileY = (int)(y / _tileSize);
             return Tiles[tileX, tileY];
         }
 
