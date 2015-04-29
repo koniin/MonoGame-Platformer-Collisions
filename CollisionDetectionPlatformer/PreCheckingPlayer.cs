@@ -179,6 +179,7 @@ namespace CollisionDetectionPlatformer
                         // Add sloping handling
                         // Reset velocity y if hit on bottom
                         // directionY == 1 ? Velocity.Y = 0
+                        isOnGround = true;
                         break;
                     }
                     newY = boundingBox.Y;
@@ -193,7 +194,7 @@ namespace CollisionDetectionPlatformer
                     boundingBox.Y += directionY;
                     // Bottom tiles
                     Tile t1 = tileMap.PositionToTile(newX, boundingBox.Top);
-                    Tile t2 = tileMap.PositionToTile(newX + boundingBox.Width, boundingBox.Top);
+                    Tile t2 = tileMap.PositionToTile(newX + boundingBox.Width - 1, boundingBox.Top);
                     if (t1.IsSolid && t1.BoundingBox.Intersects(boundingBox) || t2.IsSolid && t2.BoundingBox.Intersects(boundingBox))
                     {
                         // Add sloping handling
